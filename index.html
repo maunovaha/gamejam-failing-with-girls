@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="Mauno Vähä, Marko Sellman, Jussi Häätylä">
+<meta name="description" content="Browser based game - developed in one weekend at Stage Fall 2012 gamejam.">
+<title>FailingWithGilrs &copy; Mauno Vähä (code), Marko Sellman (graphics), Jussi Häätylä (sounds)</title>
+<style>
+body {
+	margin:0px;
+	padding:0px; 
+	background-color: #000;
+}
+
+canvas, #startScreen, #discoScreen, #endScreen, #failScreen {
+	/*margin-top: 80px;*/
+	outline:0;
+	/*margin-left: auto;
+	margin-right: auto;*/
+	border: 1px solid #fff;
+}
+canvas{
+	display: none;
+}
+#startScreen {
+	width: 640px;
+	height: 480px;
+	background-image: url(pics/startscreen.png); 
+	background-repeat: no-repeat;
+	display: none;
+}
+#startButton {
+  	width: 230px;
+  	height: 85px;	
+  	background-image: url(pics/button-startgame.png); 
+	background-repeat: no-repeat;
+	float: right;
+	padding-right: 40px;
+	margin-top: 340px;
+	display: none;
+	cursor: pointer;
+}
+#failScreen {
+	width: 640px;
+	height: 480px;
+	background-image: url(pics/ending_lose.png); 
+	background-repeat: no-repeat;
+	display: none;
+}
+#endScreen {
+	width: 640px;
+	height: 480px;
+	background-image: url(pics/ending_win.png); 
+	background-repeat: no-repeat;
+	display: none;
+}
+#failButton {
+  	width: 120px;
+  	height: 45px;	
+  	background-image: url(pics/button-playagain.png); 
+	background-repeat: no-repeat;
+	float: right;
+	padding-right: 40px;
+	margin-top: 340px;
+	display: none;
+	cursor: pointer;
+}
+#discoScreen {
+	width: 640px;
+	height: 480px;
+	background-image: url(pics/disco_bg.png); 
+	background-repeat: no-repeat;	
+	display: none;
+}
+#discoScreen #woman{
+	margin-top: 40px;
+	width: 200px;
+	height: 450px;
+	background-image: url(pics/woman.png); 
+	background-repeat: no-repeat;
+	float: right;
+	display: none;
+}
+#discoScreen #man{
+	margin-top: 140px;
+	width: 200px;
+	height: 350px;
+	background-image: url(pics/man.png); 
+	background-repeat: no-repeat;
+	float: left;
+	display: none;
+}
+#bubble_man{
+	width: 400px;
+	height: 190px;
+	background-image: url(pics/bubble_man.png); 
+	background-repeat: no-repeat;
+	display: none;
+}
+
+#bubble_man ul {
+   	font-size: 16px;
+   	font-family: "Times New Roman",Georgia,Serif;
+   	list-style: none;
+   	margin: 0;
+   	padding: 20px;
+   	display: none;
+}
+
+#bubble_man li { 
+	padding: 5px 0; 
+}
+#bubble_man li:hover { 
+	background-color: #F4FA58;
+	cursor: pointer;
+}
+#bubble_woman{
+	width: 250px;
+	height: 220px;
+	background-image: url(pics/bubble_woman.png); 
+	background-repeat: no-repeat;
+	display: none;
+}
+#bubble_woman p {
+   	font-size: 16px;
+   	font-family: "Times New Roman",Georgia,Serif;
+   	margin: 0;
+   	padding-top: 40px;
+   	padding-right: 60px;
+   	padding-left: 30px;
+   	padding-bottom: 20px;
+}
+#credits{
+  width: 640px;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  margin-left: -320px;
+  text-align: center;
+}
+#credits p{
+   color: #fff;
+}
+</style>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35602607-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</head>
+<body>
+	
+	<div id="startScreen">
+		<div id="startButton"></div>
+	</div>
+	
+	<div id="discoScreen">
+		<div id="man"></div>
+		<div id="woman"></div>
+		<div id="bubble_man">
+			<ul>
+			<li data-question="0"></li>
+			<li data-question="1"></li>
+			<li data-question="2"></li>
+			</ul>
+		</div>
+		<div id="bubble_woman"><p></p></div>
+	</div>
+		
+	<div id="failScreen">
+		<div id="failButton"></div>
+	</div>
+	
+	<div id="endScreen"></div>
+	
+	<div id="credits">
+	<p>
+	This is game developed at <a href="http://bit.ly/RxkahX" target="_blank">Stage fall 2012 gamejam.</a>
+	<br><br>
+	- Mauno Vähä - Idea & Code (twitter: <a href="http://bit.ly/T4JwUy" target="_blank" style="color: #58FAF4">@maunovaha</a>)<br>
+	- Marko Sellman - Graphics (twitter: <a href="http://bit.ly/WdsWEv" target="_blank" style="color: #58FAF4">@MarkoSellman</a>)<br>
+	- Jussi Häätylä - Sounds (twitter: <a href="http://bit.ly/RxNS6q" target="_blank" style="color: #58FAF4">@JiiiHaad</a>)<br><br>
+	
+	<b>TIP:</b> Controls are in quiz mouse left.. (later) use keyboard arrows.
+	</p>
+	</div>
+	
+	
+	<canvas id='c'></canvas>
+	
+	<script src="3rd_party/jquery-1.8.2.min.js"></script>
+	<script src="script/soundmanager2.js"></script>
+	<script type="text/javascript">
+	
+	var labyBgSound, labyStepSound, labyStepSoundWoman, discoBgSound, discoSuccess, discoFailure, initGameTimeout, gameEndSound;
+	var manDialog = [], ladyDialog = [];
+	var dialogStep = 0;
+	var answeredQuestionNumber = 0;
+	
+	manDialog[0] = {
+	q : [
+		"Wow, nice ass!",
+		"Are your parents clams cause you are such a pearl?",
+		"Can I have your autograph?"
+	],
+		v : 2
+	};
+	
+	ladyDialog[0] = [
+		"Yea, but keep walking boy..",
+		"NO! and my parents has passed away.. *sigh*",
+		"Sure, but why? :>"
+	];
+	
+	manDialog[1] = {
+	q : [
+		"Because, you look like celebrity.",
+		"So that I can add it to my collection.",
+		"..just because.."
+	],
+		v : 0
+	};
+	
+	ladyDialog[1] = [
+		"Ohh, you think so? thats awesome! *duckface*",
+		"What?! no way, pervert.!",
+		"..Because? .. im leaving.. *farts*"
+	];
+	
+	manDialog[2] = {
+	q : [
+		"Hey.. What was your name again?",
+		"Hmm.. Wanna come to my place for a cup of tee?",
+		"Did I forgot to mention that im a programmer?"
+	],
+		v : 2
+	};
+	
+	ladyDialog[2] = [
+		"Huh, are you a cop or something?. JERK!",
+		"No. I dont even know who you are.",
+		"Mmm.. you surely did, Im Lisa Blondah - nerds are HOT!"
+	];
+	
+	manDialog[3] = {
+	q : [
+		"Its getting late.. can I come over to your place?",
+		"Its getting late.. can I have last dance of the evening?",
+		"You have gigantic boobs, shall we go to your place?"
+	],
+		v : 2
+	};
+	
+	ladyDialog[3] = [
+		"Maybe later, good song just started to play..",
+		"No. you dont look like a person who can handle dubstep.",
+		"*Grrrr* of course - meet me at DarkStreet 14 A"
+	];
+
+	</script>
+	<script src="game.js"></script>
+	<script type="text/javascript">
+	
+	function alignDivs() {
+	
+		// positions for divs
+		var winWidth = {
+			w: $(window).width(),
+			h: $(window).height()
+		};
+		
+		var mainCanvas = {
+			x: (winWidth.w / 2) - (640 / 2),
+			y: (winWidth.h / 2) - ((480 / 2) + 80)
+		};
+		
+		$('#discoScreen, #c, #startScreen, #failScreen, #endScreen').css({
+        		position: "absolute",
+        		top: mainCanvas.y + "px",
+        		left: mainCanvas.x + "px"
+   		});
+   		
+   		$('#bubble_man').css({
+        		position: "absolute",
+        		top: 10  + "px",
+        		left: 40 + "px"
+   		});
+   		
+   		$('#bubble_woman').css({
+        		position: "absolute",
+        		bottom: 70  + "px",
+        		right: 166 + "px"
+   		});	
+		
+	}
+	
+	function clearInitGameTimeout() {
+		clearTimeout(initGameTimeout);
+	}
+	
+	function startGame() {
+	
+		$(function() {
+		
+		alignDivs();
+		
+		$('#bubble_man ul li').click(function(e) {
+			
+			answeredQuestionNumber = $(this).data("question");
+			
+			if(answeredQuestionNumber === manDialog[dialogStep]['v']) {
+				// ok
+				discoBgSound.stop();
+				discoSuccess.play({
+    					onfinish: function() {
+      						loopSound('discoBgSound');
+   					 }
+  				});
+			} else {
+				// bad
+				discoBgSound.stop();
+				discoFailure.play();
+			}
+			
+			$('#bubble_man ul').fadeOut('slow', function() {
+				$('#bubble_man').fadeOut('slow', function() {
+					$('#bubble_man ul li').html("");
+					popDialog("woman");
+				});
+			});
+			
+		});	
+		
+		initGameTimeout = setTimeout(function(){
+		
+			$(function() {
+			
+			$('#startScreen').fadeIn('slow', function() {
+    				// Animation complete.
+    				$('#startButton').fadeIn('slow');
+    				
+    				loopSound('menuSound');
+    				
+  			});
+		
+			$('#startButton').click(function(){ 
+
+				menuSound.stop();
+				discoSuccess.play();
+ 				
+				$('#startScreen').fadeOut('slow', function() {
+    					// Animation complete.
+    					$(this).css("display", "none"); 
+    					$('#startButton').css("display", "none"); 
+    					clearInitGameTimeout();
+    					startDisco();
+  				});	
+			});
+			
+			$('#failButton').click(function(){ 
+
+				discoSuccess.play({
+    					onfinish: function() {
+      						document.location.reload(true);
+   					 }
+  				});
+					
+			});
+			
+			});
+		
+		}, 1000);
+			
+		});
+		
+	}
+	
+	function popDialog(sex) {
+	
+		// check if steps left, if not go to labyrinth etc..
+		
+		if(sex === "man") {
+		
+			$('#bubble_man').fadeIn('slow', function() {
+		
+	    			// get questions based on step and fill the div
+	    			var manObj = manDialog[dialogStep];
+	    		
+	    			for(var uu=1; uu < manObj['q'].length+1; uu++) {
+	    				$('#bubble_man ul li:nth-child('+uu+')').append("&raquo; " + manObj['q'][uu-1]);
+	    			}
+	    			
+	    			// fading in..
+	    			$('#bubble_man ul').fadeIn('slow');
+    			});
+    						
+    		} else {
+    			
+    			// todolist: 
+    			// credits
+    			// arrow keys tips for labyrinth
+    			// woman image in labyrinth running and fayding?
+    			// moment later ending screen..
+    			
+    			$('#bubble_woman').fadeIn('slow', function() {
+    				
+	    			var womanArr = ladyDialog[dialogStep];
+	    		
+	    			$('#bubble_woman p').html("- " + womanArr[answeredQuestionNumber]);
+	    			
+	    			dialogStep++;
+	    			
+	    			var duration = 4000;
+	    			if(dialogStep === manDialog.length) {
+	    			    duration = 5000;	
+	    			}
+	    			
+	    			$('#bubble_woman').fadeOut(duration, function () {
+					$('#bubble_woman p').html("");
+					
+					var gameLost = (answeredQuestionNumber != manDialog[dialogStep-1]['v']);
+					
+					if(gameLost) {
+						
+						discoBgSound.stop();
+						$('#woman').fadeOut(700, function () {
+						
+							$('#discoScreen').fadeOut('slow', function() {
+    								// Animation complete.
+    								$(this).css("display", "none"); 
+    								$('#bubble_woman').css("display", "none"); 
+    								$('#bubble_man').css("display", "none"); 
+    								// etc...
+								$('#failScreen').fadeIn('slow', function() {
+    									$('#failButton').fadeIn('slow');
+  								});
+    							
+  							});		
+						
+						});
+  						
+  					} else if(dialogStep === manDialog.length) {
+	    					
+	    					$('#woman').fadeOut(700, function () {
+	    					
+	    					$('#man').fadeOut(700, function () {
+	    					
+	    					// fade everything away etc.. set state flag? half through!
+	    					$('#discoScreen').fadeOut('slow', function() {
+    							// Animation complete.
+    							$(this).css("display", "none"); 
+    							$('#bubble_woman').css("display", "none"); 
+    							$('#bubble_man').css("display", "none"); 
+    							// etc...
+
+    							startLabyrinth();
+    							
+  						});	
+  						
+  						});
+  						
+  						});
+	    					
+	    				} else {
+	    					popDialog("man");
+	    				}
+					
+					
+				});
+	    			
+	    			
+    				
+    			});
+    			
+    				
+    		}		
+    							
+		
+	}
+	
+	function startLabyrinth() {
+		       	 		
+		discoBgSound.stop();
+    		loopSound('labyBgSound');
+    		
+    		$('#c').fadeIn('slow', function() {
+    			GameLoop();
+    			stepClock();
+    		});
+    
+	}
+	
+	function startDisco() {
+	
+		$(function() {
+			
+			$('#discoScreen').fadeIn('slow', function() {
+				
+    				$('#woman').fadeIn('slow', function() {
+    					$('#man').fadeIn('slow', function() {
+    						
+    						loopSound('discoBgSound');
+    						popDialog("man");
+    						
+    					});
+    				});
+    				
+  			});
+
+		});
+			
+	}
+
+    	soundManager.setup({
+       	 	url: 'swf/',
+        	onready: function() {
+             		labyBgSound = soundManager.createSound({
+             			id: 'labyBgSound',
+             			url: 'sounds/labyBg_final.ogg'
+       	 		});
+       	 		labyStepSound = soundManager.createSound({
+             			id: 'labyStepSound',
+             			url: 'sounds/labyStepSound2.wav'
+       	 		});
+       	 		labyStepSoundWoman = soundManager.createSound({
+             			id: 'labyStepSoundWoman',
+             			url: 'sounds/labyStepSound2.wav'
+       	 		});
+       	 		discoBgSound = soundManager.createSound({
+             			id: 'discoBgSound',
+             			url: 'sounds/discoBg_final.ogg'
+       	 		});
+       	 		discoSuccess = soundManager.createSound({
+             			id: 'discoSuccess',
+             			url: 'sounds/discoSuccess_final.ogg'
+       	 		});
+       	 		discoFailure = soundManager.createSound({
+             			id: 'discoFailure',
+             			url: 'sounds/discoFailure_final.ogg'
+       	 		});
+       	 		menuSound = soundManager.createSound({
+             			id: 'menuSound',
+             			url: 'sounds/menu_final.ogg'
+       	 		});
+       	 		gameEndSound = soundManager.createSound({
+       	 			id: 'gameEndSound',
+       	 			url: 'sounds/gameEnd_final.ogg'
+       	 		});
+       	 		
+       	 		startGame();
+       	 		//startLabyrinth();
+
+    	},
+    	ontimeout: function() {
+        	// Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?
+        	alert('Try different browser since your sounds doesnt work!');
+    	}
+    	});
+    	
+    	function loopSound(soundID) {
+		window.setTimeout(function() {
+		soundManager.play(soundID,{onfinish:function(){loopSound(soundID);}});
+		},1);
+	}
+	
+	$(function() {
+		$(window).resize(function() {
+  			alignDivs();
+		});
+	});
+
+</script>
+</body>
+</html>
