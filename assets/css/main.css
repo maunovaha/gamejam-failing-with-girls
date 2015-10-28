@@ -1,0 +1,135 @@
+body {
+  margin:0px;
+  padding:0px; 
+  background-color: #000;
+}
+
+canvas, #startScreen, #discoScreen, #endScreen, #failScreen {
+  /*margin-top: 80px;*/
+  outline:0;
+  /*margin-left: auto;
+  margin-right: auto;*/
+  border: 1px solid #fff;
+}
+canvas{
+  display: none;
+}
+#startScreen {
+  width: 640px;
+  height: 480px;
+  background-image: url(../images/startscreen.png); 
+  background-repeat: no-repeat;
+  display: none;
+}
+#startButton {
+    width: 230px;
+    height: 85px; 
+    background-image: url(../images/button-startgame.png); 
+  background-repeat: no-repeat;
+  float: right;
+  padding-right: 40px;
+  margin-top: 340px;
+  display: none;
+  cursor: pointer;
+}
+#failScreen {
+  width: 640px;
+  height: 480px;
+  background-image: url(../images/ending_lose.png); 
+  background-repeat: no-repeat;
+  display: none;
+}
+#endScreen {
+  width: 640px;
+  height: 480px;
+  background-image: url(../images/ending_win.png); 
+  background-repeat: no-repeat;
+  display: none;
+}
+#failButton {
+    width: 120px;
+    height: 45px; 
+    background-image: url(../images/button-playagain.png); 
+  background-repeat: no-repeat;
+  float: right;
+  padding-right: 40px;
+  margin-top: 340px;
+  display: none;
+  cursor: pointer;
+}
+#discoScreen {
+  width: 640px;
+  height: 480px;
+  background-image: url(../images/disco_bg.png); 
+  background-repeat: no-repeat; 
+  display: none;
+}
+#discoScreen #woman{
+  margin-top: 40px;
+  width: 200px;
+  height: 450px;
+  background-image: url(../images/woman.png); 
+  background-repeat: no-repeat;
+  float: right;
+  display: none;
+}
+#discoScreen #man{
+  margin-top: 140px;
+  width: 200px;
+  height: 350px;
+  background-image: url(../images/man.png); 
+  background-repeat: no-repeat;
+  float: left;
+  display: none;
+}
+#bubble_man{
+  width: 400px;
+  height: 190px;
+  background-image: url(../images/bubble_man.png); 
+  background-repeat: no-repeat;
+  display: none;
+}
+
+#bubble_man ul {
+    font-size: 16px;
+    font-family: "Times New Roman",Georgia,Serif;
+    list-style: none;
+    margin: 0;
+    padding: 20px;
+    display: none;
+}
+
+#bubble_man li { 
+  padding: 5px 0; 
+}
+#bubble_man li:hover { 
+  background-color: #F4FA58;
+  cursor: pointer;
+}
+#bubble_woman{
+  width: 250px;
+  height: 220px;
+  background-image: url(../images/bubble_woman.png); 
+  background-repeat: no-repeat;
+  display: none;
+}
+#bubble_woman p {
+    font-size: 16px;
+    font-family: "Times New Roman",Georgia,Serif;
+    margin: 0;
+    padding-top: 40px;
+    padding-right: 60px;
+    padding-left: 30px;
+    padding-bottom: 20px;
+}
+#credits{
+  width: 640px;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  margin-left: -320px;
+  text-align: center;
+}
+#credits p{
+   color: #fff;
+}
