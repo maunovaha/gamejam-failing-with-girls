@@ -7,25 +7,25 @@ var audioPath = "assets/sounds/";
 var soundsLoaded = 0;
 var soundsList = [{
   id: "labyBgSound",
-  src: "labyBg_final.wav"
+  src: "labyBg_final.ogg"
 }, {
   id: "labyStepSound",
-  src: "labyStepSound2.wav"
+  src: "labyStepSound2.ogg"
 }, {
   id: "discoBgSound",
-  src: "discoBg_final.wav"
+  src: "discoBg_final.ogg"
 }, {
   id: "discoSuccess",
-  src: "discoSuccess_final.wav"
+  src: "discoSuccess_final.ogg"
 }, {
   id: "discoFailure",
-  src: "discoFailure_final.wav"
+  src: "discoFailure_final.ogg"
 }, {
   id: "menuSound",
-  src: "menu_final.wav"
+  src: "menu_final.ogg"
 }, {
   id: "gameEndSound",
-  src: "gameEnd_final.wav"
+  src: "gameEnd_final.ogg"
 }];
 
 var soundLoops = {
@@ -136,7 +136,7 @@ function loadSoundsAndStart() {
     return;
   }
 
-  createjs.Sound.alternateExtensions = ["ogg"];
+  createjs.Sound.alternateExtensions = ["wav"];
   createjs.Sound.addEventListener("fileload", handleLoad);
   createjs.Sound.registerSounds(soundsList, audioPath);
 
