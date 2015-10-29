@@ -140,7 +140,6 @@ var player = new(function() {
   that.imageShadow.width = 96;
   that.imageShadow.height = 96;
 
-
   /**
    *
    */
@@ -148,8 +147,7 @@ var player = new(function() {
     that.X = x;
     that.Y = y;
 
-    // play only if not playing?
-    // labyStepSound.play();
+    createjs.Sound.play("labyStepSound");
   }
 
   /**
@@ -178,10 +176,6 @@ var player = new(function() {
 
     if (pressedKey.length > 0) {
 
-      console.log(that.X, that.Y);
-      console.log(pixelPositionToGridPosition(that.X, that.Y, that.image.width));
-      console.log(that.givenPositionFree(that.X, that.Y));
-
       if (arrs[pressedKey] === 'left' && that.X > 0 && that.givenPositionFree(that.X - that.image.width, that.Y)) { // left
         that.setPosition(that.X - that.image.width, that.Y);
       } else if (arrs[pressedKey] === 'right' && that.givenPositionFree(that.X + that.image.width, that.Y)) { // right
@@ -191,8 +185,6 @@ var player = new(function() {
       } else if (arrs[pressedKey] === 'down' && that.givenPositionFree(that.X, that.Y + that.image.height)) { // down
         that.setPosition(that.X, that.Y + that.image.height);
       }
-
-      console.log("next pos as slot: " + (that.X / that.image.width) + " y: " + (that.Y / that.image.height));
 
       pressedKey = [];
     }
@@ -239,14 +231,13 @@ function stepClock() {
   if (state === true) {
 
     if (timeLeft >= 0) {
-      timeTracker = setTimeout("stepClock()", 1000);
+      timeTracker = setTimeout(stepClock, 1000);
     } else {
       stopClock();
       GameFinished("");
     }
 
   }
-
 
 }
 
@@ -278,11 +269,11 @@ var GameFinished = function(result) {
   state = false;
   clearTimeout(gLoop);
 
-  // labyBgSound.stop();
+  soundLoops["labyBgSound"].stop();
 
   if (result === "victory") {
 
-    discoSuccess.play();
+    createjs.Sound.play("discoSuccess");
 
     $('#c').fadeOut('slow', function() {
       // Animation complete.
@@ -290,24 +281,23 @@ var GameFinished = function(result) {
 
       $('#endScreen').fadeIn('slow', function() {
 
-        /*
-        gameEndSound.play({
-          onfinish: function() {
+        var playGameEndSound = createjs.Sound.play("gameEndSound");
+        playGameEndSound.on("complete", function(event) {
 
-            $('#endScreen').fadeOut('slow', function() {
-              window.location.reload(true);
-            });
+          $('#endScreen').fadeOut('slow', function() {
+            window.location.reload(true);
+          });
 
-          }
-        });
-        */
+        }, this);
+
+        createjs.Sound.play("gameEndSound");
       });
 
     });
 
-  } else { // you have failed, refresh view etc etc.?
+  } else {
 
-    discoFailure.play();
+    createjs.Sound.play("discoFailure");
 
     $('#c').fadeOut('slow', function() {
       // Animation complete.

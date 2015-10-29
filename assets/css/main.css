@@ -122,14 +122,3 @@ canvas{
     padding-left: 30px;
     padding-bottom: 20px;
 }
-#credits{
-  width: 640px;
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  margin-left: -320px;
-  text-align: center;
-}
-#credits p{
-   color: #fff;
-}

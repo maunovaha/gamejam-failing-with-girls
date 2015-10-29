@@ -1,8 +1,38 @@
-var labyBgSound, labyStepSound, labyStepSoundWoman, discoBgSound, discoSuccess, discoFailure, initGameTimeout, gameEndSound;
+var initGameTimeout;
 var manDialog = [],
   ladyDialog = [];
 var dialogStep = 0;
 var answeredQuestionNumber = 0;
+var audioPath = "assets/sounds/";
+var soundsLoaded = 0;
+var soundsList = [{
+  id: "labyBgSound",
+  src: "labyBg_final.wav"
+}, {
+  id: "labyStepSound",
+  src: "labyStepSound2.wav"
+}, {
+  id: "discoBgSound",
+  src: "discoBg_final.wav"
+}, {
+  id: "discoSuccess",
+  src: "discoSuccess_final.wav"
+}, {
+  id: "discoFailure",
+  src: "discoFailure_final.wav"
+}, {
+  id: "menuSound",
+  src: "menu_final.wav"
+}, {
+  id: "gameEndSound",
+  src: "gameEnd_final.wav"
+}];
+
+var soundLoops = {
+  "menuSound": undefined,
+  "discoBgSound": undefined,
+  "labyBgSound": undefined
+};
 
 manDialog[0] = {
   q: [
@@ -67,6 +97,7 @@ ladyDialog[3] = [
 function alignDivs() {
 
   // positions for divs
+  /*
   var winWidth = {
     w: $(window).width(),
     h: $(window).height()
@@ -76,11 +107,12 @@ function alignDivs() {
     x: (winWidth.w / 2) - (640 / 2),
     y: (winWidth.h / 2) - ((480 / 2) + 80)
   };
+  */
 
   $('#discoScreen, #c, #startScreen, #failScreen, #endScreen').css({
     position: "absolute",
-    top: mainCanvas.y + "px",
-    left: mainCanvas.x + "px"
+    top: 0 + "px",
+    left: 0 + "px"
   });
 
   $('#bubble_man').css({
@@ -97,101 +129,89 @@ function alignDivs() {
 
 }
 
-function clearInitGameTimeout() {
-  clearTimeout(initGameTimeout);
-}
-
-function startGame() {
+function loadSoundsAndStart() {
 
   // if initializeDefaultPlugins returns false, we cannot play sound in this browser
   if (!createjs.Sound.initializeDefaultPlugins()) {
     return;
   }
 
-  var audioPath = "assets/sounds/";
-  var sounds = [{
-    id: "Music",
-    src: "menu_final.ogg"
-  }];
-
-  createjs.Sound.alternateExtensions = ["mp3"];
+  createjs.Sound.alternateExtensions = ["ogg"];
   createjs.Sound.addEventListener("fileload", handleLoad);
-  createjs.Sound.registerSounds(sounds, audioPath);
+  createjs.Sound.registerSounds(soundsList, audioPath);
 
-  $(function() {
+}
 
-    alignDivs();
+function startGame() {
 
-    $('#bubble_man ul li').click(function(e) {
+  $('#bubble_man ul li').click(function(e) {
 
-      answeredQuestionNumber = $(this).data("question");
+    answeredQuestionNumber = $(this).data("question");
 
-      if (answeredQuestionNumber === manDialog[dialogStep]['v']) {
-        // ok
-        /*
-        discoBgSound.stop();
-        discoSuccess.play({
-          onfinish: function() {
-            loopSound('discoBgSound');
-          }
+    if (answeredQuestionNumber === manDialog[dialogStep]['v']) {
+      // ok
+      soundLoops["discoBgSound"].stop();
+
+      var playDiscoSuccess = createjs.Sound.play("discoSuccess");
+      playDiscoSuccess.on("complete", function(event) {
+
+        soundLoops["discoBgSound"] = createjs.Sound.play("discoBgSound", {
+          loop: -1
         });
-        */
-      } else {
-        // bad
-        // discoBgSound.stop();
-        // discoFailure.play();
-      }
 
-      $('#bubble_man ul').fadeOut('slow', function() {
-        $('#bubble_man').fadeOut('slow', function() {
-          $('#bubble_man ul li').html("");
-          popDialog("woman");
-        });
+      });
+
+    } else {
+      // bad
+      soundLoops["discoBgSound"].stop();
+      createjs.Sound.play("discoFailure");
+    }
+
+    $('#bubble_man ul').fadeOut('slow', function() {
+      $('#bubble_man').fadeOut('slow', function() {
+        $('#bubble_man ul li').html("");
+        popDialog("woman");
+      });
+    });
+
+  });
+
+  var initGameTimeout = setTimeout(function() {
+
+
+    $('#startScreen').fadeIn('slow', function() {
+      // Animation complete.
+      $('#startButton').fadeIn('slow');
+
+      soundLoops["menuSound"] = createjs.Sound.play("menuSound", {
+        loop: -1
       });
 
     });
 
-    initGameTimeout = setTimeout(function() {
+    $('#startButton').click(function() {
 
-      $(function() {
+      soundLoops["menuSound"].stop();
+      createjs.Sound.play("discoSuccess");
 
-        $('#startScreen').fadeIn('slow', function() {
-          // Animation complete.
-          $('#startButton').fadeIn('slow');
-
-          // loopSound('menuSound');
-
-        });
-
-        $('#startButton').click(function() {
-
-          // menuSound.stop();
-          // discoSuccess.play();
-
-          $('#startScreen').fadeOut('slow', function() {
-            // Animation complete.
-            $(this).css("display", "none");
-            $('#startButton').css("display", "none");
-            clearInitGameTimeout();
-            startDisco();
-          });
-        });
-
-        $('#failButton').click(function() {
-
-          discoSuccess.play({
-            onfinish: function() {
-              document.location.reload(true);
-            }
-          });
-
-        });
-
+      $('#startScreen').fadeOut('slow', function() {
+        // Animation complete.
+        $(this).css("display", "none");
+        $('#startButton').css("display", "none");
+        startDisco();
       });
+    });
 
-    }, 1000);
+    $('#failButton').click(function() {
 
-  });
+      var playSuccess = createjs.Sound.play("discoSuccess");
+      playSuccess.on("complete", function(event) {
+        document.location.reload(true);
+      }, this);
+
+    });
+
+  }, 1000);
 
 }
 
@@ -300,8 +320,10 @@ function popDialog(sex) {
 
 function startLabyrinth() {
 
- //  discoBgSound.stop();
-  // loopSound('labyBgSound');
+  soundLoops["discoBgSound"].stop();
+  soundLoops["labyBgSound"] = createjs.Sound.play("labyBgSound", {
+    loop: -1
+  });
 
   $('#c').fadeIn('slow', function() {
     GameLoop();
@@ -312,96 +334,39 @@ function startLabyrinth() {
 
 function startDisco() {
 
-  $(function() {
+  $('#discoScreen').fadeIn('slow', function() {
 
-    $('#discoScreen').fadeIn('slow', function() {
+    $('#woman').fadeIn('slow', function() {
+      $('#man').fadeIn('slow', function() {
 
-      $('#woman').fadeIn('slow', function() {
-        $('#man').fadeIn('slow', function() {
-
-          // loopSound('discoBgSound');
-          popDialog("man");
-
+        soundLoops["discoBgSound"] = createjs.Sound.play("discoBgSound", {
+          loop: -1
         });
-      });
 
+        popDialog("man");
+
+      });
     });
 
   });
 
-}
-
-/*
-soundManager.setup({
-  url: 'swf/',
-  onready: function() {
-    labyBgSound = soundManager.createSound({
-      id: 'labyBgSound',
-      url: 'sounds/labyBg_final.ogg'
-    });
-    labyStepSound = soundManager.createSound({
-      id: 'labyStepSound',
-      url: 'sounds/labyStepSound2.wav'
-    });
-    labyStepSoundWoman = soundManager.createSound({
-      id: 'labyStepSoundWoman',
-      url: 'sounds/labyStepSound2.wav'
-    });
-    discoBgSound = soundManager.createSound({
-      id: 'discoBgSound',
-      url: 'sounds/discoBg_final.ogg'
-    });
-    discoSuccess = soundManager.createSound({
-      id: 'discoSuccess',
-      url: 'sounds/discoSuccess_final.ogg'
-    });
-    discoFailure = soundManager.createSound({
-      id: 'discoFailure',
-      url: 'sounds/discoFailure_final.ogg'
-    });
-    menuSound = soundManager.createSound({
-      id: 'menuSound',
-      url: 'sounds/menu_final.ogg'
-    });
-    gameEndSound = soundManager.createSound({
-      id: 'gameEndSound',
-      url: 'sounds/gameEnd_final.ogg'
-    });
-
-    startGame();
-    //startLabyrinth();
-
-  },
-  ontimeout: function() {
-    // Hrmm, SM2 could not start. Missing SWF? Flash blocked? Show an error, etc.?
-    alert('Try different browser since your sounds doesnt work!');
-  }
-});
-*/
-
-function loopSound(soundID) {
-  /*
-  window.setTimeout(function() {
-    soundManager.play(soundID, {
-      onfinish: function() {
-        loopSound(soundID);
-      }
-    });
-  }, 1);
-  */
 }
 
 function handleLoad(event) {
+  soundsLoaded++;
 
-  console.log("handleload called!");
+  if (soundsLoaded === soundsList.length) {
+    startGame();
+  }
 
-  createjs.Sound.play(event.src);
 }
 
 $(function() {
+
+  alignDivs();
+  loadSoundsAndStart();
+
   $(window).resize(function() {
     alignDivs();
   });
-
-  startGame();
 });
