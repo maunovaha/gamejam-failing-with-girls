@@ -4,7 +4,7 @@ A simple dating game in which you are trying to flirt with a woman.
 
 This game is developed for stage fall 2012 gamejam within 48 hours.
 
-![Screenshot](http://maunovaha.com/assets/images/games/failingwithgirls_2.png)
+![Screenshot](/failing-with-girls.jpg)
 
 
 ### Play
